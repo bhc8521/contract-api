@@ -1,3 +1,6 @@
+合约账户: v5-app.bhc8521.testnet
+
+
 add_post //发布public内容
 {
     args: {    //序列化的内容
