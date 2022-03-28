@@ -1,0 +1,63 @@
+add_post //发布public内容
+{
+    args: {    //序列化的内容
+        text: String, 
+        imgs: [String], 
+        video: String, 
+        audio: String
+    }
+    
+}
+return target_hash: String   //唯一的内容id
+
+
+add_encrypt_post   //发布加密内容（社区外可能不需要）
+{
+    encrypt_info: String, //加密内容
+    sign: String    
+}
+return target_hash: String   //唯一的内容id
+
+follow
+{
+    account_id: String
+}
+return null
+
+unfollow
+{
+    account_id: String
+}
+return null
+
+like
+{
+    target_hash: String   //唯一的内容id
+}
+return null
+
+unlike
+{
+    target_hash: String
+}
+return null
+
+add_comment
+{
+    args: {    //序列化的内容
+        text: String, 
+        imgs: [String], 
+        video: String, 
+        audio: String
+    }
+    target_hash: String
+}
+return target_hash: String   //唯一的内容id
+
+add_encrypt_comment
+{
+    encrypt_info: String, //加密内容
+    sign: String, 
+    target_hash: String
+}
+return target_hash: String   //唯一的内容id
