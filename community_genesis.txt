@@ -1,0 +1,49 @@
+合约地址： community-genesis.bhc8521.testnet
+call functions:
+deploy_community
+{
+    name: String, 
+    community_type: String, 
+    args: String  {} //目前默认没这个字段
+}
+return null
+
+view functions:
+
+get_account_communities   //获取个人所有的社区
+{
+    account_id: AccountId
+}
+return [String]   //合约地址
+
+get_communities   //获取所有社区
+return [String]   //合约地址
+
+get_community_info
+{
+    contract_id: String
+}
+return {
+    contract_id: String,
+    owner_id: String,
+    community_type: String
+}
+
+get_code_info     
+{
+    community_type: String
+}
+return {
+    hash: String,
+    length: Number,
+    storage_deposit: String
+}
+
+get_code_storage_cost
+{
+    community_type: String
+}
+return String   ////需要多少deposit
+
+get_code_types   //获取社区代码种类
+return [String]

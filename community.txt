@@ -1,0 +1,88 @@
+合约地址： xxx.community-genesis.bhc8521.testnet
+
+call functions:
+
+join
+return null
+
+set_access
+{
+    conditions: [{
+        token_id: String,
+        amount_to_access: String
+    }], 
+    relationship: 
+    enum {
+        Or: 0,
+        And: 1
+    }
+}
+
+return null
+
+
+add_post
+{
+    args: {    //序列化的内容
+        text: String, 
+        imgs: [String], 
+        video: String, 
+        audio: String
+    }
+    
+}
+return String    //唯一id
+
+
+add_encrypt_post   //发布加密内容（社区外可能不需要）
+{
+    encrypt_args: String   {text: String,imgs: String,video: String,audio: String}
+    access: {
+        conditions: [{
+            token_id: String,
+            amount_to_access: String
+        }], 
+        relationship: 
+        enum {
+            Or: 0,
+            And: 1
+        }
+    }, 
+    text_sign: String, 
+    contract_id_sign: String
+}
+return target_hash: String   //唯一的内容id
+
+like
+{
+    target_hash: String   //唯一的内容id
+}
+return null
+
+unlike
+{
+    target_hash: String
+}
+return null
+
+
+add_comment
+{
+    args: {    //序列化的内容
+        text: String, 
+        imgs: [String], 
+        video: String, 
+        audio: String
+    }
+    target_hash: String
+}
+return target_hash: String   //唯一的内容id
+
+add_encrypt_comment
+{
+    encrypt_args: String, {text: String,imgs: String,video: String,audio: String}
+    text_sign: String,  //从加密合约获取的签名
+    contract_id_sign: String,   //从加密合约获取的签名
+    target_hash: String       //指向的唯一id
+}
+return target_hash: String   //唯一的内容id

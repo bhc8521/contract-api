@@ -14,13 +14,6 @@ add_post //发布public内容
 return target_hash: String   //唯一的内容id
 
 
-add_encrypt_post   //发布加密内容（社区外可能不需要）
-{
-    encrypt_info: String, //加密内容
-    sign: String    
-}
-return target_hash: String   //唯一的内容id
-
 follow
 {
     account_id: String
@@ -53,14 +46,6 @@ add_comment
         video: String, 
         audio: String
     }
-    target_hash: String
-}
-return target_hash: String   //唯一的内容id
-
-add_encrypt_comment
-{
-    encrypt_info: String, //加密内容
-    sign: String, 
     target_hash: String
 }
 return target_hash: String   //唯一的内容id

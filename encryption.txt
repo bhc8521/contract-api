@@ -1,0 +1,22 @@
+合约地址： encryption.bhc8521.testnet
+
+view functions:
+encrpyt
+{
+    plain_text: Object, 
+    contract_id: String
+}
+return {
+    
+    cipher_text: Object,
+    text_sign: String,
+    contract_id_sign: String
+}
+
+decrypt
+{
+    cipher_text: Object, 
+    contract_id: String, 
+    sign: String    //从服务器获得的签名
+}
+return Object
