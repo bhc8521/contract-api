@@ -1,7 +1,7 @@
 合约地址： encryption.bhc8521.testnet
 
 view functions:
-encrpyt
+encrypt
 {
     plain_text: Object, 
     contract_id: String
