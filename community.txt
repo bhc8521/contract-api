@@ -8,8 +8,10 @@ return null
 set_access
 {
     conditions: [{
-        token_id: String,
-        amount_to_access: String
+        FTCondition: {
+            token_id: String,
+            amount_to_access: String
+        }
     }], 
     relationship: 
     enum {
