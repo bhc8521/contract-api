@@ -1,5 +1,5 @@
 合约地址： xxx.community-genesis.bhc8521.testnet
-目前测试用的  test4.community-genesis.bhc8521.testnet
+目前测试用的  test4.community-genesis2.bhc8521.testnet
 
 call functions:
 
