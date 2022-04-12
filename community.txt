@@ -41,8 +41,10 @@ add_encrypt_post   //发布加密内容（社区外可能不需要）
     encrypt_args: String   {text: String,imgs: String,video: String,audio: String}
     access: {
         conditions: [{
-            token_id: String,
-            amount_to_access: String
+            FTCondition: {
+                token_id: String,
+                amount_to_access: String
+            }
         }], 
         relationship: 
         enum {
