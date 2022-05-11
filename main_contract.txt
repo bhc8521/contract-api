@@ -7,7 +7,10 @@ add_post //发布public内容
         text: String, 
         imgs: [String], 
         video: String, 
-        audio: String
+        audio: String,
+        options:[{
+            At: String   //@账号名
+        }]
     }
     
 }
