@@ -1,0 +1,88 @@
+合约地址：nft.bhc8521.testnet
+call 方法：
+1.nft_create_series(
+        creator_id: String || null,
+        token_metadata: {
+            title: String || null,              // 需要 ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
+            description: String || null,        // 需要 free-form description
+            media: String || null,              // 需要, 最终是AR上的存储，目前直接用s3的地址 URL to associated media, preferably to decentralized, content-addressed storage
+            media_hash: [u8] || null,           // 需要，媒体文件的sha256哈希，Base64-encoded sha256 hash of content referenced by the `media` field. Required if `media` is included.
+            copies: Option<u64>,                // 需要 number of copies of this set of metadata in existence when token was minted.
+            issued_at: String || null,          // ISO 8601 datetime when token was issued or minted
+            expires_at: String || null,         // ISO 8601 datetime when token expires
+            starts_at: String || null,          // ISO 8601 datetime when token starts being valid
+            updated_at: String || null,         // ISO 8601 datetime when token was last updated
+            extra: String || null,              // anything extra the NFT wants to store on-chain. Can be stringified JSON.
+            reference: String || null,          // 需要，快速访问地址, 最终用ipfs地址, 目前直接用s3的地址，URL to an off-chain JSON file with more info.
+            reference_hash: [u8] || null,       // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
+        }, 
+        mint_price: String || null, 
+        ft_token_id: "near" || String || null,  //mint用的token，目前只填"near"
+        royalty: Option<HashMap<AccountId, u32>>,  //同paras
+    )
+return string   //返回一个唯一token_series_id
+
+2.nft_mint(
+    token_series_id: String, 
+    receiver_id: String
+)
+
+3.storage_deposit()
+
+view 方法：
+1.nft_get_series_single(           //获取但个series
+    token_series_id: String
+)
+return {
+    token_series_id: String,
+	metadata: TokenMetadata,
+	creator_id: String,
+    royalty: Obj<String, number> || null,
+    ft_token_id: String || null,
+    mint_price: String || null
+}
+
+2.nft_get_series(                  //获取多个series
+    from_index: String || null,    //从第几个开始 输入一个数字(转换成字符串)
+    limit: String || null,         //返回多少个 输入一个数字
+)
+return [{
+    token_series_id: TokenSeriesId,
+	metadata: TokenMetadata,       //同上面那一大串
+	creator_id: AccountId,
+    royalty: HashMap<AccountId, u32>,
+    ft_token_id: Option<AccountId>,
+    mint_price: Option<U128>
+}]
+
+3.nft_get_series_price(            //获取series价格
+    token_series_id: String       
+)
+return String || null
+
+4.nft_supply_for_series(           //获取已经mint的总量
+    token_series_id: String
+)   
+return String                      //字符串表示的数量
+
+5.nft_tokens_by_series(
+    token_series_id: TokenSeriesId,
+    from_index: Option<U128>,
+    limit: Option<u64>,
+)
+return [{
+    token_id: String,              //具体mint出来的token id
+    owner_id: String,
+    metadata: TokenMetadata,       //同上面那一大串
+    approved_account_ids: Option<HashMap<AccountId, u64>>, //不重要
+}]
+
+
+前端mint流程：
+用near mint:
+1.nft_get_series_price 获取到价格
+2.nft_mint    deposit字段：将获取的价格加上0.02个near
+
+
+后端indexer:
+筛选nft_create_series方法，主要记录token_series_id，其他信息都记录在链上了
