@@ -19,8 +19,15 @@ call 方法：
         mint_price: String || null, 
         ft_token_id: "near" || String || null,  //mint用的token，目前只填"near"
         royalty: Option<HashMap<AccountId, u32>>,  //同paras
+        notify_contract_id: String              //会通知别的合约
     )
 return string   //返回一个唯一token_series_id
+此调用会有一个跨合约调用，通知notify_contract_id这个合约，调用这个合约的add_item方法
+对于nft来说：会有以下结构
+add_item({
+    args: '{"token_series_id": xxx}'
+})
+return hash                                     //存入数据库中真正的target_hash
 
 2.nft_mint(
     token_series_id: String, 
