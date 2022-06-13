@@ -1,17 +1,60 @@
 合约账户: v5-app.bhc8521.testnet
 
+区分target_hash和hierarchy_hash
 
-add_post //发布public内容
+add_content //发布public内容
 {
     args: {    //序列化的内容
         text: String, 
         imgs: [String], 
         video: String, 
         audio: String,
-        options:[{
-            At: String   //@账号名
-        }]
-    }
+    },
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }]
+
+    //以下为协议不需要的额外参数
+
+    options:[{
+        At: String   //@账号名
+    }],
+    target_hash: String
+    
+}
+return target_hash: String   //唯一的内容id
+
+add_encrypt_content //发布public内容
+{
+    encrypt_args: String   {text: String,imgs: String,video: String,audio: String}
+    access: {
+        conditions: [{
+            FTCondition: {
+                token_id: String,
+                amount_to_access: String
+            }
+        }], 
+        relationship: 
+        enum {
+            Or: 0,
+            And: 1
+        }
+    }, 
+    
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }],
+    nonce: String,   //服务器提供
+    sign: String,    //服务器提供
+
+    //以下为协议不需要的额外参数
+
+    options:[{
+        At: String   //@账号名
+    }],
+    target_hash: String
     
 }
 return target_hash: String   //唯一的内容id
@@ -31,24 +74,43 @@ return null
 
 like
 {
-    target_hash: String   //唯一的内容id
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }]
 }
 return null
 
 unlike
 {
-    target_hash: String
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }]
 }
 return null
 
-add_comment
+report 
 {
-    args: {    //序列化的内容
-        text: String, 
-        imgs: [String], 
-        video: String, 
-        audio: String
-    }
-    target_hash: String
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }]
 }
-return target_hash: String   //唯一的内容id
+
+report_confirm   //社区管理员方法
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }], 
+    del: bool  //是否删除内容
+}
+
+del_content
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }], 
+}
