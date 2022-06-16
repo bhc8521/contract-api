@@ -107,6 +107,14 @@ report_confirm   //社区管理员方法
     del: bool  //是否删除内容
 }
 
+redeem_report_deposit
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }], 
+}
+
 del_content
 {
     hierarchies: [{
@@ -114,3 +122,43 @@ del_content
         account_id: String
     }], 
 }
+
+share_view
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }], 
+    inviter_id: String    //是谁邀请的
+}
+
+
+
+
+
+view 方法：
+check_viewed  //检查是否邀请过
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }], 
+    inviter_id: String    //是谁邀请的
+    account_id: String    //自己
+}
+return bool
+
+
+get_reports
+{
+    account_id: String
+}
+return [{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }], 
+    deposit: String   //存了多少保证金
+    timestamp: String   //存入时间 纳秒  如果举报失败1个月以后才能解锁
+    del: bool || null     //此条举报是否被confirm，true表示举报成功，false表示失败，null表示还没处理
+}]
