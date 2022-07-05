@@ -8,6 +8,23 @@ deploy_community
 }
 return null
 
+update_community
+{
+    contract_id: AccountId, 
+    community_type: String, 
+    args: String  {} //目前默认没这个字段
+}
+return null
+
+deploy_community_by_owner
+{
+    name: String, 
+    community_type: String, 
+    creator_id: String, 
+    args: String  {} //目前默认没这个字段
+}
+return null
+
 view functions:
 
 get_account_communities   //获取个人所有的社区
