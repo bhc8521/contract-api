@@ -13,14 +13,14 @@ add_content //发布public内容
     hierarchies: [{
         target_hash: String,
         account_id: String
-    }]
+    }]  //length为0是post, length为1是一级评论，length为2是二级评论
 
     //以下为协议不需要的额外参数
 
     options:[{
         At: String   //@账号名
     }],
-    target_hash: String
+    reply_target_hash: String    //如果是二级评论去回复二级评论则存在
     
 }
 return target_hash: String   //唯一的内容id
