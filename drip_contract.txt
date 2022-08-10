@@ -1,0 +1,23 @@
+合约地址：  drip.bhc8521.testnet
+
+view 方法：
+get_coe_map()
+return {
+    key: value
+}  //返回一个对象,key是对应的积分项目
+//post, comment, subcomment, comment to post, subcomment to post, subcomment to comment
+//例如： key为 “content0“ 则对应上述顺序中的第一个也就是post的系数
+//like, share_view, report
+//这三种就是正常的他的名字,like就是like, report目前没有，可以忽略
+
+call 方法：
+set_coe   //添加或修改一个系数
+{
+    key: String, 
+    coe: String  //字符串形式的数字
+)
+
+del_coe   //删除一个系数
+{
+    key: String
+}
