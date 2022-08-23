@@ -1,7 +1,13 @@
 合约地址：  drip.bhc8521.testnet
 
 view 方法：
-
+ft_balance_of
+{
+    account_id: String, 
+    contract_id: String || null, //合约地址，不填就是获取总余额,估计用不上总余额
+    token_source: {Building: {} || Fueling: {}} || null  //现在没有fueling，置空就行
+}
+    
 
 call 方法：
 
