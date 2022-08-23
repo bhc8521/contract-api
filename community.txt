@@ -37,8 +37,6 @@ add_content //发布public内容
         account_id: String
     }]
 
-    //以下为协议不需要的额外参数
-
     options:{
         at: [String]   //@账号名
         drip_royalties: {String: number}  //积分分成，账户名key和百分比(0-100)

@@ -50,12 +50,11 @@ add_encrypt_content //发布public内容
     nonce: String,   //服务器提供
     sign: String,    //服务器提供
 
-    //以下为协议不需要的额外参数
-
     options:{
         at: [String]   //@账号名
         drip_royalties: {String: number}  //积分分成，账户名key和百分比(0-100)
     },
+    
     reply_target_hash: String    //如果是二级评论去回复二级评论则存在
     
 }
