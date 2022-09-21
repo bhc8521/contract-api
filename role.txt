@@ -1,0 +1,126 @@
+enum RoleKindInput {
+    Everyone,   //all身份组
+    Group,      //成员类型的身份组
+    Access(Access)   //access limit身份组，里面的参数同add_encrypt_content里的access,两边通用
+}
+
+
+enum Permission {
+    AddContent(u8),   //hierarchy level count of content 假设只能发评论，那么需要将身份组权限加入AddContent(1)和AddContent(2)
+    DelContent,       //是否能删除自己发的内容
+    AddEncryptContent(u8),   //hierarchy level count of encrypt content  同AddContent
+    DelEncryptContent,  //同AddContent
+    Like,             //此处点赞和取消点赞分开了，但目前默认都要加上
+    Unlike,
+    Share,
+    Report,
+    //默认情况下普通all成员都有上面的权限
+
+
+    ReportConfirm,       //管理员处理举报权限
+    ManageContent,       //删除别人的帖子，目前没有
+    SetRole(Option<String>),   
+    //参数为要指定的身份组名字，当SetRole不带参数时，可以管理所有低于当前身份组管理等级的身份组，指定时，假设被指定的身份组管理等级高于此身份组则无效，
+    //管理内容为权限，管理层级和权限覆盖层级，并且管理层级只能设置为小于此管理员的管理层级，如果是access limit类的身份组，则可改变加入身份组规则
+    DelRole(Option<String>),   //同上
+    AddMember(Option<String>), //规则类似于setroe和delrole，但只能管理group类身份组的成员
+    RemoveMember(Option<String>),
+    Other(String)   //off-chain permission  
+    //Other(”ManageInfo”) 管理社区信息
+    //Other(”ManagePin”)  管理社区置顶
+    //Other(”ManageBenefits”) 管理benefits
+    //Other(”ManageNews”) 管理news
+    //Other(”ManageRules”) 管理社区rules
+}
+
+社区创建时默认有4个身份组: "all", "mod", "assistance", "ban"
+
+
+call 方法：
+add_role
+{
+    alias: String, //创建后可更改, 前端只显示alias
+    kind: RoleKindInput, 
+    permissions: [Permission], 
+    mod_level: u32,    //管理等级，有SetRole或者DelRole并且等级大于要被管理的身份组才能有效
+    override_level: u32  //权限覆盖等级，目前仅限于黑名单
+}
+return hash: String
+
+set_role
+{
+    hash: String, 
+    alias: Option<String>,
+    kind: Option<RoleKindInput>,     //只可以用于access更改
+    permissions: Option<Vec<Permission>>, 
+    mod_level: Option<u32>, 
+    override_level: Option<u32>
+}
+remove_role
+{
+    hash: String
+}
+
+add_member_to_role
+{
+    hash: String, 
+    members: [(AccountId, Option<HashMap<String, String>>)]  //里面是元组  元组第一个是账号名，第二个是Object 目前key只有until，代表这个成员能在这个身份组里能待到什么时候
+}
+remove_member_from_role
+{
+    hash: String, 
+    members: [AccountId]
+}
+
+身份组举例：
+pub fn init_roles() {
+    let mut roles = UnorderedMap::new(StorageKey::Roles);
+    let mut permissions = HashSet::new();
+    permissions.insert(Permission::AddContent(0));
+    permissions.insert(Permission::AddContent(1));
+    permissions.insert(Permission::AddContent(2));
+    permissions.insert(Permission::DelContent);
+    permissions.insert(Permission::AddEncryptContent(0));
+    permissions.insert(Permission::AddEncryptContent(1));
+    permissions.insert(Permission::AddEncryptContent(2));
+    permissions.insert(Permission::DelEncryptContent);
+    permissions.insert(Permission::Like);
+    permissions.insert(Permission::Unlike);
+    permissions.insert(Permission::Report);
+    roles.insert(&"all".to_string(), &Role { 
+        alias: "all".to_string(),
+        kind: RoleKind::Everyone, 
+        permissions:  permissions.clone(),
+        mod_level: 0,
+        override_level: 0
+    });
+    roles.insert(&"assistance".to_string(), &Role { 
+        alias: "all".to_string(),
+        kind: RoleKind::Group(Group {
+            members: UnorderedMap::new("assistance_member".as_bytes())
+        }), 
+        permissions:  permissions.clone(),
+        mod_level: 0,
+        override_level: 0
+    });
+    permissions.insert(Permission::SetRole(Some("all".to_string())));
+    permissions.insert(Permission::Other("ManageInfo".to_string()));
+    roles.insert(&"mod".to_string(), &Role { 
+        alias: "mod".to_string(),
+        kind: RoleKind::Group(Group {
+            members: UnorderedMap::new("mod_member".as_bytes())
+        }), 
+        permissions:  permissions,
+        mod_level: 0,
+        override_level: 0
+    });
+    roles.insert(&"ban".to_string(), &Role { 
+        alias: "all".to_string(),
+        kind: RoleKind::Group(Group {
+            members: UnorderedMap::new("ban_member".as_bytes())
+        }), 
+        permissions:  HashSet::new(),
+        mod_level: 0,
+        override_level: 0
+    });
+}
