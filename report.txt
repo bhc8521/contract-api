@@ -1,0 +1,68 @@
+enum Report {
+    Approve,   //确认删除内容，会产生drip
+    Disapprove,   //拒绝
+    Ignore     //忽略，会产生drip
+}  
+
+
+
+call 方法：
+report_confirm
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }],
+    report: Report
+}
+
+
+
+enum MsgInput {
+    Report(ReportInput),
+    Deposit(Deposit)
+}
+
+enum Deposit {
+    FT(AccountId),
+    NFT(AccountId),
+    Drip(AccountId)    //对于report来说只用drip
+}
+
+struct ReportInput {
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }],
+    reason: String
+}
+
+
+drip合约方法：
+流程： 
+1.用户调用drip合约的ft_burn_call
+2.drip合约调用社区合约的ft_on_burn
+
+
+前端调用：
+ft_burn_call
+{
+    receiver_id: AccountId,
+    contract_id: AccountId,
+    token_source: Option<TokenSource>,  //用不到
+    amount: U128,                       //字符串
+    msg: String,                        //序列化后的MsgInput
+}
+
+
+
+indexer抓：
+这个方法是一个通用方法，只能靠msg来区分他的功能
+ft_on_burn
+{
+    owner_id: AccountId,     //要burn的人
+    contract_id: AccountId,   //burn的是哪个社区的drip
+    token_source: Option<TokenSource>,   //暂时用不到，留空
+    amount: U128,
+    msg: String              //序列化后的MsgInput
+}
