@@ -66,3 +66,13 @@ ft_on_burn
     amount: U128,
     msg: String              //序列化后的MsgInput
 }
+
+扣钱抓：
+ft_resolve_burn
+{
+    owner_id: AccountId,
+    receiver_id: AccountId,
+    contract_id: AccountId,
+    token_source: Option<TokenSource>,   //暂时用不到，留空
+    amount: U128,
+}
