@@ -18,7 +18,7 @@ enum Permission {
 
 
     ReportConfirm,       //管理员处理举报权限
-    ManageContent,       //删除别人的帖子，目前没有
+    DelOthersContent,    //删除别人帖子
     SetRole(Option<String>),   
     //参数为要指定的身份组名字，当SetRole不带参数时，可以管理所有低于当前身份组管理等级的身份组，指定时，假设被指定的身份组管理等级高于此身份组则无效，
     //管理内容为权限，管理层级和权限覆盖层级，并且管理层级只能设置为小于此管理员的管理层级，如果是access limit类的身份组，则可改变加入身份组规则

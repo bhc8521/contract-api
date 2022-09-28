@@ -132,3 +132,12 @@ del_content
 }
 return null
 
+del_others_content
+{
+    hierarchies: [{
+        target_hash: String,
+        account_id: String
+    }],
+}
+return null
+
