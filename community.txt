@@ -1,30 +1,12 @@
 合约地址： xxx.community-genesis.bhc8521.testnet
-目前测试用的  test4.community-genesis2.bhc8521.testnet
 
 call functions:
 
 join
 return null
 
-set_access
-{
-    conditions: [{
-        FTCondition: {
-            token_id: String,
-            amount_to_access: String
-        }
-    }], 
-    relationship: 
-    enum {
-        Or: 0,
-        And: 1
-    }
-}
 
-return null
-
-
-add_content //发布public内容
+add_content //发布public内容，最大可发送20kb文字，但是实际使用时文字越多消耗gas费越多，没法跟add_long_content接口相比
 {
     args: {    //序列化的内容
         text: String, 
@@ -38,7 +20,21 @@ add_content //发布public内容
     }]
 
     options:{
-        drip_royalties: {String: number}  //积分分成，账户名key和百分比(0-100)
+        access: {
+            conditions: [{
+                FTCondition: {
+                    token_id: String,
+                    contract_id: String, 
+                    amount_to_access: String,
+                }
+            }], 
+            relationship: 
+            enum {
+                Or: 0,
+                And: 1
+            }
+        }, 
+        drip_royalties: {String: number}  //积分分成，账户名key和百分比(0-100) 还用不到
     },
     extra: {
         at: [String]   //@账号名
@@ -49,40 +45,31 @@ add_content //发布public内容
 }
 return target_hash: String   //唯一的内容id
 
-add_encrypt_content //发布public内容
-{
-    encrypt_args: String   {text: String,imgs: String,video: String,audio: String}
-    access: {
-        conditions: [{
-            FTCondition: {
-                token_id: String,
-                amount_to_access: String
-            }
-        }], 
-        relationship: 
-        enum {
-            Or: 0,
-            And: 1
-        }
-    }, 
-    
-    hierarchies: [{
-        target_hash: String,
-        account_id: String
-    }],
-    nonce: String,   //服务器提供
-    sign: String,    //服务器提供
+add_long_content
+参数不是json，是一个经过Buffer.from处理过的u8数组
+结构为:
+前四位代表参数长度
+参数u8数组
+原文
 
-    //以下为协议不需要的额外参数
-
-    options:{
-        at: [String]   //@账号名
-        drip_royalties: {String: number}  //积分分成，账户名key和百分比(0-100)
-    },
-    reply_target_hash: String
-    
+示例：
+let rawText = Buffer.from(text)   //原文
+let args = {
+    hierarchies: [xxx],
+    options: {xxx}，
+    extra: {xxx}
 }
-return target_hash: String   //唯一的内容id
+let argsJson = JSON.stringify(args)
+let rawArgs = Buffer.from(argsJson)  //参数
+let rawLength = Buffer.alloc(4)      //构造参数长度前缀
+rawLength.writeUint8(rawArgs.length)
+let rawInput = Buffer.concat([rawLength, rawArgs, rawText]) //最终的参数数组
+const actions = [functionCall("add_long_content", buffer, GAS)];
+await account.signAndSendTransaction({receiverId: CONTRACT_ID, actions: actions})
+
+没有返回值，event_json中会展示target_hash
+最大可发送100kb文字
+
 
 like
 {

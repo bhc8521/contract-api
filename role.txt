@@ -1,8 +1,26 @@
-enum RoleKindInput {
-    Everyone,   //all身份组
-    Group,      //成员类型的身份组
-    Access(Access)   //access limit身份组，里面的参数同add_encrypt_content里的access,两边通用
-}
+不区分RoleKind,
+多了一个global_state，是一个单独的身份组
+定义如下：
+HashMap<Permission, (Relationship, Option<Access>>)), //permission表, relationship为or或者and, 每条permission去和普通身份组中的permission去做逻辑运算, access为是否通过drips数量来判断用户有没有权限
+
+对于目前的产品来说，
+1.当前端用户选择owner only发帖的话, global role的权限有
+Or Like之类的最基础权限
+去掉addContent(0)
+And 管理类权限
+
+2.当前端用户选择whitelist only发帖的话, global role的权限有
+Or Like之类的最基础权限
+And 管理类权限
+添加And addContent(0)
+
+3.当前端用户选择all发帖的话, global role的权限有
+Or Like之类的最基础权限
+And 管理类权限
+添加Or addContent(0)
+
+接口看下面的set_global_role
+
 
 
 enum Permission {
@@ -33,10 +51,32 @@ enum Permission {
     //Other(”ManageRules”) 管理社区rules
 }
 
-社区创建时默认有4个身份组: "all", "mod", "assistance", "ban"
+社区创建时默认有1个身份组: "ban"
 
 
 call 方法：
+set_global_role
+{
+    permissions: [Permission],    
+    options: [["Or" || "And", Access || null]]    
+    //两个数组一一对应
+}
+//举例： 
+{"addContent: 0": ["Or", access: {
+            conditions: [{
+                FTCondition: {
+                    token_id: String,
+                    contract_id: String, 
+                    amount_to_access: String,
+                }
+            }], 
+            relationship: 
+            enum {
+                Or: 0,
+                And: 1
+            }
+        }, ]}
+
 add_role
 {
     alias: String, //创建后可更改, 前端只显示alias
@@ -72,55 +112,3 @@ remove_member_from_role
     members: [AccountId]
 }
 
-身份组举例：
-pub fn init_roles() {
-    let mut roles = UnorderedMap::new(StorageKey::Roles);
-    let mut permissions = HashSet::new();
-    permissions.insert(Permission::AddContent(0));
-    permissions.insert(Permission::AddContent(1));
-    permissions.insert(Permission::AddContent(2));
-    permissions.insert(Permission::DelContent);
-    permissions.insert(Permission::AddEncryptContent(0));
-    permissions.insert(Permission::AddEncryptContent(1));
-    permissions.insert(Permission::AddEncryptContent(2));
-    permissions.insert(Permission::DelEncryptContent);
-    permissions.insert(Permission::Like);
-    permissions.insert(Permission::Unlike);
-    permissions.insert(Permission::Report);
-    roles.insert(&"all".to_string(), &Role { 
-        alias: "all".to_string(),
-        kind: RoleKind::Everyone, 
-        permissions:  permissions.clone(),
-        mod_level: 0,
-        override_level: 0
-    });
-    roles.insert(&"assistance".to_string(), &Role { 
-        alias: "all".to_string(),
-        kind: RoleKind::Group(Group {
-            members: UnorderedMap::new("assistance_member".as_bytes())
-        }), 
-        permissions:  permissions.clone(),
-        mod_level: 0,
-        override_level: 0
-    });
-    permissions.insert(Permission::SetRole(Some("all".to_string())));
-    permissions.insert(Permission::Other("ManageInfo".to_string()));
-    roles.insert(&"mod".to_string(), &Role { 
-        alias: "mod".to_string(),
-        kind: RoleKind::Group(Group {
-            members: UnorderedMap::new("mod_member".as_bytes())
-        }), 
-        permissions:  permissions,
-        mod_level: 0,
-        override_level: 0
-    });
-    roles.insert(&"ban".to_string(), &Role { 
-        alias: "all".to_string(),
-        kind: RoleKind::Group(Group {
-            members: UnorderedMap::new("ban_member".as_bytes())
-        }), 
-        permissions:  HashSet::new(),
-        mod_level: 0,
-        override_level: 0
-    });
-}
