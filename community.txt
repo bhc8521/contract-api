@@ -13,6 +13,10 @@ add_content //发布public内容，最大可发送20kb文字，但是实际使�
         imgs: [String], 
         video: String, 
         audio: String,
+        nft: [{
+            contract_id: String,
+            token_id: String
+        }]
     },
     hierarchies: [{
         target_hash: String,
