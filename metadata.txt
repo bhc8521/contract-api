@@ -1,0 +1,7 @@
+call方法：
+
+set_metadata
+{
+    items: [[String, String]]  //key-value数组
+}
+没有返回值，event_json中展示可以生效的更改
