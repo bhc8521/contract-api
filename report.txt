@@ -20,6 +20,7 @@ report_confirm
 
 enum MsgInput {
     Report(ReportInput),
+    RevokeReport(ReportInput)        //撤销report
     Deposit(Deposit)
 }
 
@@ -39,40 +40,60 @@ struct ReportInput {
 
 
 drip合约方法：
-流程： 
-1.用户调用drip合约的ft_burn_call
-2.drip合约调用社区合约的ft_on_burn
-
-
+1.report
 前端调用：
-ft_burn_call
+ft_deposit_call
 {
     receiver_id: AccountId,
     contract_id: AccountId,
-    token_source: Option<TokenSource>,  //用不到
     amount: U128,                       //字符串
     msg: String,                        //序列化后的MsgInput
 }
 
-
-
 indexer抓：
 这个方法是一个通用方法，只能靠msg来区分他的功能
-ft_on_burn
+ft_on_deposit
 {
-    owner_id: AccountId,     //要burn的人
-    contract_id: AccountId,   //burn的是哪个社区的drip
-    token_source: Option<TokenSource>,   //暂时用不到，留空
+    owner_id: AccountId,     //要deposit发起者
+    contract_id: AccountId,   //deposit的是哪个社区的drip, 一般为当前社区
     amount: U128,
     msg: String              //序列化后的MsgInput
 }
 
 扣钱抓：
-ft_resolve_burn
+ft_resolve_deposit
+{
+    owner_id: AccountId,      //发起者
+    receiver_id: AccountId,   //存入的社区
+    contract_id: AccountId,   //存入的哪个社区的drip, 一般同上
+    amount: U128, 
+}
+
+1.撤销report
+前端调用：
+ft_withdraw_call
+{
+    receiver_id: AccountId,
+    contract_id: AccountId,
+    amount: U128,                       //字符串
+    msg: String,                        //序列化后的MsgInput，此时用的是RevokeReport
+}
+
+indexer抓：
+这个方法是一个通用方法，只能靠msg来区分他的功能
+ft_on_withdraw
+{
+    owner_id: AccountId,     //withdraw发起者
+    contract_id: AccountId,   //withdraw的是哪个社区的drip, 一般为当前社区
+    amount: U128,
+    msg: String              //序列化后的MsgInput
+}
+
+赎回抓：
+ft_resolve_withdraw
 {
     owner_id: AccountId,
     receiver_id: AccountId,
     contract_id: AccountId,
-    token_source: Option<TokenSource>,   //暂时用不到，留空
     amount: U128,
 }
